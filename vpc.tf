@@ -84,4 +84,69 @@ resource "aws_route_table_association" "tf-project-priv-assoc" {
   route_table_id = aws_route_table.tf-project-priv-rt.id
 }
 
+resource "aws_security_group" "tf-project-pub-ssh" {
+  name = "tf-project-pub-ssh"
+  description = "Allow SSH from my IP"
+  vpc_id = aws_vpc.tf-project-vpc.id
+
+  ingress {
+    description = "Allow ssh from my IP"
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }  
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name = "tf-project-pub-ssh"
+  }
+}
+
+resource "aws_security_group" "tf-project-priv-ssh" {
+  name = "tf-project-priv-ssh"
+  description = "Allow Bastion hosts from public subnet"
+  vpc_id = aws_vpc.tf-project-vpc.id
+
+  ingress {
+    description = "Allow Bastion hosts from public subnet"
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    cidr_blocks = ["10.1.1.0/24"]
+  }  
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name = "tf-project-priv-ssh"
+  }
+}
+
+resource "aws_security_group" "tf-project-pub-web" {
+  name = "tf-project-pub-web"
+  description = "Allow web traffic from my IP"
+  vpc_id = aws_vpc.tf-project-vpc.id
+
+  ingress {
+    description = "Allow web traffic from my IP"
+    from_port = 80
+    to_port = 80
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }  
+
+  tags = {
+    Name = "tf-project-pub-web"
+  }
+}
 
