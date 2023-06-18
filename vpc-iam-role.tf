@@ -52,7 +52,6 @@ resource "aws_iam_policy" "LockdownVPC-1" {
                 "ec2:AuthorizeSecurityGroupEgress",
                 "ec2:AuthorizeSecurityGroupIngress",
                 "ec2:RevokeSecurityGroupEgress",
-                "ec2:DeleteSecurityGroup",
                 "ec2:DeleteRoute",
                 "ec2:DeleteNetworkAcl",
                 "ec2:DeleteNetworkAclEntry",
