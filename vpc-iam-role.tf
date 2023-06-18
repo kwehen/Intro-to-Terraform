@@ -1,5 +1,5 @@
 resource "aws_iam_policy" "LockdownVPC-1" {
-  name = "LockdownVPC-1"
+  name   = "LockdownVPC-1"
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -100,7 +100,22 @@ resource "aws_iam_policy" "LockdownVPC-1" {
             "Sid": "VisualEditor7",
             "Effect": "Allow",
             "Action": "iam:ChangePassword",
-            "Resource": "${aws_iam_user.tf-project-user.arn}"
+            "Resource": [ 
+            "${aws_iam_user.tf-project-user.arn}",
+            "${aws_iam_user.tf-project-user-2.arn}"
+        ]
+        },
+        {
+            "Sid": "VisualEditor8",
+            "Effect":"Allow",
+            "Action": "s3:ListAllMyBuckets",
+            "Resource":"*"
+        },
+        {
+            "Sid": "VisualEditor9",   
+            "Effect":"Allow",
+            "Action":["s3:ListBucket","s3:GetBucketLocation"],
+            "Resource":"${aws_s3_bucket.<UNIQUE-BUCKET-NAME>.arn}"
         }
     ]
 }
@@ -108,14 +123,14 @@ EOF
 }
 
 resource "aws_iam_policy_attachment" "tf-project-role-attachment" {
-  name = "tf-project-role-attachment"
-  users = [aws_iam_user.tf-project-user.name]
-  roles = [aws_iam_role.tf-project-vpc-role.name]
+  name       = "tf-project-role-attachment"
+  users      = [aws_iam_user.tf-project-user.name, aws_iam_user.tf-project-user-2.name]
+  roles      = [aws_iam_role.tf-project-vpc-role.name]
   policy_arn = aws_iam_policy.LockdownVPC-1.arn
 }
 
 resource "aws_iam_role" "tf-project-vpc-role" {
-  name = "TfProjectVPCUserRole"
+  name               = "TfProjectVPCUserRole"
   assume_role_policy = <<EOF
   {
     "Version": "2012-10-17",
@@ -134,29 +149,56 @@ EOF
 }
 
 resource "aws_iam_user" "tf-project-user" {
-  name = "TfProjectUser"
+  name          = "TfProjectUser"
   force_destroy = true
 }
 
+resource "aws_iam_user" "tf-project-user-2" {
+  name = "TfProjectUser2"
+}
+
 resource "pgp_key" "TfProjectUser" {
-  name = "TfProjectUser"
-  email = "xxxxx@xxxxx"
+  name    = "TfProjectUser"
+  email   = "xxxxx@xxxxx"
   comment = "Generated PGP Key"
 }
 
+resource "pgp_key" "TfProjectUser2" {
+  name    = "TfProjectUser2"
+  email   = "xxxxx@xxxxx"
+  comment = "Generated Second PGP Key"
+}
+
 resource "aws_iam_user_login_profile" "TfProjectUser-Login" {
-  user = aws_iam_user.tf-project-user.name
-  pgp_key = pgp_key.TfProjectUser.public_key_base64
+  user                    = aws_iam_user.tf-project-user.name
+  pgp_key                 = pgp_key.TfProjectUser.public_key_base64
+  password_reset_required = true
+}
+
+resource "aws_iam_user_login_profile" "TfProjectUser2-Login" {
+  user                    = aws_iam_user.tf-project-user-2.name
+  pgp_key                 = pgp_key.TfProjectUser2.public_key_base64
   password_reset_required = true
 }
 
 data "pgp_decrypt" "TfProjectUser" {
-  private_key = pgp_key.TfProjectUser.private_key
-  ciphertext = aws_iam_user_login_profile.TfProjectUser-Login.encrypted_password
+  private_key         = pgp_key.TfProjectUser.private_key
+  ciphertext          = aws_iam_user_login_profile.TfProjectUser-Login.encrypted_password
+  ciphertext_encoding = "base64"
+}
+
+data "pgp_decrypt" "TfProjectUser2" {
+  private_key         = pgp_key.TfProjectUser2.private_key
+  ciphertext          = aws_iam_user_login_profile.TfProjectUser2-Login.encrypted_password
   ciphertext_encoding = "base64"
 }
 
 output "password-TfProjectUser" {
-  value = data.pgp_decrypt.TfProjectUser.plaintext
+  value     = data.pgp_decrypt.TfProjectUser.plaintext
+  sensitive = true
+}
+
+output "password-TfProjectUser2" {
+  value     = data.pgp_decrypt.TfProjectUser2.plaintext
   sensitive = true
 }
