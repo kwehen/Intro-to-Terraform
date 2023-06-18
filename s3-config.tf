@@ -106,6 +106,11 @@ resource "aws_kms_key" "tf-project-bucket-key" {
   enable_key_rotation = true
 }
 
+resource "aws_kms_alias" "tf-project-key-alias" {
+  name          = "alias/tf-project-bucket-key"
+  target_key_id = aws_kms_key.tf-project-bucket-key.key_id
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "tf-project-sse" {
   bucket = aws_s3_bucket.<UNIQUE-BUCKET-NAME>.id
 
