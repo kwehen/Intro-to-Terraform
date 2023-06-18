@@ -3,7 +3,6 @@ Requirements to reference during Terraform project:
     - Configure VPC with subnets, security groups, and ACLs. Ensure network segmentation. 
     - Use consistent and meaningful tagging of resources. 
     - Implement encryption at rest. Utilize KMS and S3, RDS, and/or EBS with encryption enabled. 
-    - Enable logging and monitoring. CloudTrail, CloudWatch, Config, etc. 
     - Ensure data storage such as S3 has proper access control policies. 
     - Use Terraform scanning tools to identify and mitigate insecure AWS infrastructure. 
     - Avoid hardcoding sensitive information into Terraform configuration. 
