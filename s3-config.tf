@@ -73,3 +73,20 @@ resource "aws_s3_bucket_policy" "tf-project-bucket-policy" {
 }
 EOF
 }
+
+resource "aws_kms_key" "tf-project-bucket-key" {
+  description             = "Encryption key for Project Bucket"
+  deletion_window_in_days = 10
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "tf-project-sse" {
+  bucket = aws_s3_bucket.<UNIQUE-BUCKET-NAME>.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.tf-project-bucket-key.arn
+      sse_algorithm     = "aws:kms"
+    }
+    bucket_key_enabled = true
+  }
+}
