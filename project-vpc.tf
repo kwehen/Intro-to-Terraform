@@ -96,12 +96,6 @@ resource "aws_security_group" "tf-project-pub-ssh" {
     cidr_blocks = ["<0.0.0.0/0>"]
   }  
 
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
   tags = {
     Name = "tf-project-pub-ssh"
   }
@@ -120,12 +114,6 @@ resource "aws_security_group" "tf-project-priv-ssh" {
     cidr_blocks = ["10.1.1.0/24"]
   }  
 
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
   tags = {
     Name = "tf-project-priv-ssh"
   }
@@ -150,12 +138,6 @@ resource "aws_security_group" "tf-project-pub-web" {
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   } 
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   tags = {
     Name = "tf-project-pub-web"
