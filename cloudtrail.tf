@@ -46,6 +46,18 @@ resource "aws_s3_bucket" "tf-project-trail" {
   force_destroy = true
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "tf-trail-see" {
+  bucket = aws_s3_bucket.tf-project-trail.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.tf-project-bucket-key.arn
+      sse_algorithm = "aws:kms"
+    }
+    bucket_key_enabled = true
+  }
+}
+
 resource "aws_s3_bucket_ownership_controls" "tf-project-trail-own" {
   bucket = aws_s3_bucket.tf-project-trail.id
   rule {
