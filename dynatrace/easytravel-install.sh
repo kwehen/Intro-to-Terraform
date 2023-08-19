@@ -10,7 +10,7 @@
 ## Set DT_TENANT_URL and API TOKEN
 # ---- Define Dynatrace Environment ----
 # Sample: https://{your-domain}/e/{your-environment-id} for managed or https://{your-environment-id}.live.dynatrace.com for SaaS
-DT_TENANT_URL=5a0d6e34-0815-438e-b1f3-6b2b85af2978
+DT_TENANT_URL="https://ian685.dynatrace-managed.com/e/5a0d6e34-0815-438e-b1f3-6b2b85af2978
 DT_PAAS_TOKEN=dt0c01.KAB44GZENPGL2JDMQ6KBIYOI.JAZWKXOLWM7BFOXCTBM4TMEZE22HM6NVDE
 
 # Not used on this script ATM. Used before for installing the ActigeGate automatically
