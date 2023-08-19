@@ -161,7 +161,7 @@ setupProAliases() {
 installDynatrace() {
   if [ -n "${DT_TENANT_URL}" ]; then
     printInfoSection "Installation of OneAgent"
-    wget -O Dynatrace-OneAgent-Linux-1.271.135.20230810-115019.sh "https://ian685.dynatrace-managed.com/e/5a0d6e34-0815-438e-b1f3-6b2b85af2978/api/v1/deployment/installer/agent/unix/default/latest?arch=x86&flavor=default" --header="Authorization: Api-Token dt0c01.E2RSTA4TL5TIKFVML4PN5KFL.VLG6PHR2LOYUFL5F25HQOKYALOE36BDR3WUIOIXIHNBOZO4AKXOIP3B7TIH2XA6E"
+    wget -O Dynatrace-OneAgent-Linux-1.271.135.20230810-115019.sh "https://ian685.dynatrace-managed.com/e/5a0d6e34-0815-438e-b1f3-6b2b85af2978/api/v1/deployment/installer/agent/unix/default/latest?arch=x86&flavor=default" --header="Authorization: Api-Token dt0c01.E2RSTA4TL5TIKFVML4PN5KFL.VLG6PHR2LOYUFL5F25HQOKYALOE36BDR3WUIOIXIHNBOZO4AKXOIP3B7TIH2XA6E"
     wget https://ca.dynatrace.com/dt-root.cert.pem ; ( echo 'Content-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256"; boundary="--SIGNED-INSTALLER"'; echo ; echo ; echo '----SIGNED-INSTALLER' ; cat Dynatrace-OneAgent-Linux-1.271.135.20230810-115019.sh ) | openssl cms -verify -CAfile dt-root.cert.pem > /dev/null
     /bin/sh Dynatrace-OneAgent-Linux-1.271.135.20230810-115019.sh --set-infra-only=false --set-app-log-content-access=true
   fi
