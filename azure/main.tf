@@ -1,3 +1,16 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = "3.70.0"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+}
+
 resource "azurerm_resource_group" "test-rg" {
   name     = "test-resources"
   location = "East Us"
@@ -49,7 +62,7 @@ resource "azurerm_network_security_rule" "test-sg-rule-1" {
   protocol                    = "Tcp"
   source_port_range           = "*"
   destination_port_range      = "*"
-  source_address_prefix       = "75.15.184.198/32"
+  source_address_prefix       = "home.ip.address"
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.test-rg.name
   network_security_group_name = azurerm_network_security_group.test-sg.name
