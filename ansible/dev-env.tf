@@ -10,7 +10,7 @@ resource "aws_vpc" "dev-vpc" {
 resource "aws_subnet" "dev-subnet" {
   vpc_id = aws_vpc.dev-vpc.id
   cidr_block = "10.1.1.0/24"
-  map_customer_owned_ip_on_launch = true
+  map_public_ip_on_launch = true
   availability_zone = "us-east-1a"
 
     tags = {
@@ -26,20 +26,28 @@ resource "aws_internet_gateway" "dev-igw" {
   }
 }
 
+resource "aws_route_table" "dev-route-table" {
+  vpc_id = aws_vpc.dev-vpc.id
+
+  tags = {
+    Name = "dev-route-table"
+  }
+}
+
 resource "aws_route" "dev-route" {
-  route_table_id = aws_vpc.dev-vpc.id
+  route_table_id = aws_route_table.dev-route-table.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id = aws_internet_gateway.dev-igw.id
 }
 
 resource "aws_route_table_association" "dev-route-assoc" {
   subnet_id = aws_subnet.dev-subnet.id
-  route_table_id = aws_route.dev-route.id
+  route_table_id = aws_route_table.dev-route-table.id
 }
 
 resource "aws_security_group" "dev-SG" {
   name = "dev-SG"
-  description = "Allow all traffic from my IP"
+  description = "Allow all traffic from my IP and Internally"
   vpc_id = aws_vpc.dev-vpc.id
 
   ingress {
@@ -47,7 +55,9 @@ resource "aws_security_group" "dev-SG" {
     from_port = 0
     to_port = 0
     protocol = "-1"
-    cidr_blocks = ["198.44.128.149/32"]
+    cidr_blocks = [
+        "198.44.128.149/32",
+        "10.1.1.0/32"]
   }
 
   egress {
@@ -62,12 +72,18 @@ resource "aws_security_group" "dev-SG" {
   }
 }
 
+resource "aws_key_pair" "tft-auth" {
+  key_name = "tft-key"
+  public_key = file("~/.ssh/tft-key.pub")
+}
+
 resource "aws_instance" "dev-ubuntu" {
   ami = data.aws_ami.server_ami.id
   instance_type = "t2.micro"
-  key_name = "~/.ssh/tft-key"
+  key_name = aws_key_pair.tft-auth.id
   vpc_security_group_ids = [aws_security_group.dev-SG.id]
   subnet_id = aws_subnet.dev-subnet.id
+  user_data = file("userdata.tpl")
 
   root_block_device {
     volume_size = 10
@@ -82,7 +98,7 @@ resource "aws_instance" "dev-ubuntu" {
 resource "aws_instance" "dev-windows" {
   ami = data.aws_ami.windows-server-ami.id
   instance_type = "t2.micro"
-  key_name = "~/.ssh/tft-key"
+  key_name = aws_key_pair.tft-auth.id
   vpc_security_group_ids = [aws_security_group.dev-SG.id]
   subnet_id = aws_subnet.dev-subnet.id
 
