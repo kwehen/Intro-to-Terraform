@@ -57,7 +57,7 @@ resource "aws_security_group" "dev-SG" {
     protocol    = "-1"
     cidr_blocks = [
       "198.44.128.149/32",
-    "10.1.1.0/32"]
+    "10.1.1.0/24"]
   }
 
   egress {
