@@ -77,6 +77,11 @@ resource "aws_key_pair" "tft-auth" {
   public_key = file("~/.ssh/tft-key.pub")
 }
 
+resource "aws_key_pair" "windows-auth" {
+  key_name = "windows-auth"
+  public_key = file("~/.ssh/windows-auth.pub")
+}
+
 resource "aws_instance" "dev-ubuntu" {
   ami                    = data.aws_ami.server_ami.id
   instance_type          = "t2.micro"
@@ -98,7 +103,8 @@ resource "aws_instance" "dev-ubuntu" {
 resource "aws_instance" "dev-windows" {
   ami                    = data.aws_ami.windows-server-ami.id
   instance_type          = "t2.micro"
-  key_name               = aws_key_pair.tft-auth.id
+  key_name               = aws_key_pair.windows-auth.id
+  get_password_data = true
   vpc_security_group_ids = [aws_security_group.dev-SG.id]
   subnet_id              = aws_subnet.dev-subnet.id
 
