@@ -1,0 +1,38 @@
+---
+- name: Run basic PowerShell script
+  hosts: windows  # Replace with the actual host or group of hosts
+  tasks:
+   - name: Execute PowerShell script
+     ansible.windows.win_powershell:
+       script: |
+         $toolDownloadUrl = "https://github.com/dotnet/cli-lab/releases/download/1.6.0/dotnet-core-uninstall-1.6.0.msi"
+         $msiFilePath = "C:\Windows\dotnet-core-uninstall-1.6.0.msi"
+         $installDirectory = "C:\Program Files (x86)\dotnet-core-uninstall"
+
+         Invoke-WebRequest -Uri $toolDownloadUrl -OutFile $msiFilePath
+
+         Start-Process -Wait -FilePath "C:\Windows\System32\msiexec.exe" -ArgumentList "/i `"C:\Windows\dotnet-core-uninstall-1.6.0.msi`" /quiet INSTALLDIR=`"$installDirectory>
+
+         & 'C:\Program Files (x86)\dotnet-core-uninstall\dotnet-core-uninstall.exe' remove --all --sdk --force --yes
+
+         Remove-Item $msiFilePath -Force
+         Remove-Item $installDirectory -Recurse -Force
+
+- name: Pull .NET Script
+  hosts: windows
+  gather_facts: yes
+  tasks:
+    - name: Download dotnet-install.ps1 script
+      ansible.windows.win_command: powershell.exe -
+      args:
+        stdin: Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile "C:\Users\Administrator\dotnet-install.ps1"
+#        url: https://dot.net/v1/dotnet-install.ps1
+#        dest: C:\Users\Administrator\dotnet-install.ps1
+
+- name: Execute dotnet-install.ps1
+  hosts: windows
+  gather_facts: no
+  tasks:
+    - name: Execute dotnet-install.ps1
+      ansible.windows.win_command:
+        cmd: powershell.exe & \Users\Administrator\dotnet-install.ps1 -Channel LTS
