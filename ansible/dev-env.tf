@@ -88,7 +88,6 @@ resource "aws_instance" "dev-ubuntu" {
   key_name               = aws_key_pair.tft-auth.id
   vpc_security_group_ids = [aws_security_group.dev-SG.id]
   subnet_id              = aws_subnet.dev-subnet.id
-  user_data              = file("userdata.tpl")
 
   root_block_device {
     volume_size = 10
