@@ -26,8 +26,6 @@
       ansible.windows.win_command: powershell.exe -
       args:
         stdin: Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile "C:\Users\Administrator\dotnet-install.ps1"
-#        url: https://dot.net/v1/dotnet-install.ps1
-#        dest: C:\Users\Administrator\dotnet-install.ps1
 
 - name: Execute dotnet-install.ps1
   hosts: windows
